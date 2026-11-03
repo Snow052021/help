@@ -1,110 +1,517 @@
-html_code = """<!DOCTYPE html>
+
+<!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>C# Qeustionbox (No AI)</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 500px;
-      margin: 50px auto;
-      padding: 20px;
-      background-color: #f4f4f9;
-    }
-    .box {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    textarea {
-      width: 100%;
-      height: 100px;
-      margin-bottom: 10px;
-      padding: 8px;
-      box-sizing: border-box;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 4px;
-      cursor: pointer;
-      width: 100%;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    #antwoord {
-      margin-top: 15px;
-      padding: 10px;
-      background-color: #eef;
-      border-radius: 4px;
-      white-space: pre-wrap;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medisch Vraagforum</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f5f6f7;
+  color: #30343b;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+.forum {
+  max-width: 850px;
+  margin: 35px auto;
+  background: #fff;
+  border: 1px solid #dedfe2;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.forum-header {
+  padding: 24px 28px;
+  border-bottom: 1px solid #dedfe2;
+}
+
+.forum-header h1 {
+  font-size: 23px;
+  font-weight: 500;
+  margin: 0 0 8px;
+  color: #30343b;
+}
+
+.forum-header p {
+  margin: 0;
+  color: #777;
+  line-height: 1.5;
+}
+
+.forum-info {
+  background: #fafafa;
+  padding: 12px 28px;
+  border-bottom: 1px solid #e5e5e5;
+  color: #777;
+  font-size: 12px;
+}
+
+.topic {
+  padding: 22px 28px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.topic-title {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.topic-meta {
+  color: #888;
+  font-size: 12px;
+  margin-bottom: 18px;
+}
+
+.post {
+  display: flex;
+  gap: 17px;
+  padding: 17px 0;
+  border-top: 1px solid #eee;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background: #e9edf1;
+  color: #526273;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.post-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.post-author {
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #343a40;
+}
+
+.post-time {
+  color: #999;
+  font-size: 11px;
+  font-weight: normal;
+  margin-left: 8px;
+}
+
+.post-text {
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: #444;
+}
+
+.reply-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: #888;
+  margin: 8px 0;
+}
+
+.loading {
+  color: #888;
+  padding: 12px 0;
+  font-size: 13px;
+}
+
+.reply-area {
+  padding: 22px 28px;
+  background: #fafafa;
+}
+
+.reply-area h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 105px;
+  padding: 13px;
+  border: 1px solid #d8dadd;
+  border-radius: 4px;
+  resize: vertical;
+  font-family: Arial;
+  font-size: 14px;
+  line-height: 1.5;
+  outline: none;
+  background: white;
+}
+
+textarea:focus {
+  border-color: #8998a8;
+}
+
+.submit {
+  margin-top: 10px;
+  padding: 11px 20px;
+  background: #596b7c;
+  border: 0;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.submit:hover {
+  background: #435566;
+}
+
+.submit:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.forum-footer {
+  padding: 15px 28px;
+  color: #999;
+  font-size: 11px;
+  border-top: 1px solid #eee;
+  line-height: 1.5;
+}
+
+@media(max-width:600px) {
+  .forum {
+    margin: 0;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+  }
+
+  .forum-header,
+  .topic,
+  .reply-area {
+    padding: 18px;
+  }
+
+  .forum-info {
+    padding: 11px 18px;
+  }
+
+  .post {
+    gap: 11px;
+  }
+
+  .forum-header h1 {
+    font-size: 20px;
+  }
+}
+</style>
 </head>
+
 <body>
 
-  <div class="box">
-    <h2>Stel je vraag aan Tommy de ML</h2>
-    <textarea id="vraag" placeholder="Wat is je vraag?"></textarea>
-    <button onclick="stelVraag()">Stuur vraag</button>
-    
-    <div id="antwoord">Het antwoord verschijnt hier...</div>
+<div class="forum">
+
+  <div class="forum-header">
+    <h1>Vragenforum voor C# vraagstukken</h1>
+    <p>Dit is een forum voor vragen over C#!</p>
   </div>
 
-  <script>
-    // VUL HIER JE NIEUWE GEMINI API KEY IN (Begint meestal met AIzaSy...)
-    const API_KEY = "AQ.Ab8RN6LBbJ2dOtUi8JFSZaMK3y_fY2enxLccf5RPan29n_Jssg";
+  <div class="forum-info">
+    Simpele vragen simpele antwoorden
+  </div>
 
-    async function stelVraag() {
-      const vraagText = document.getElementById("vraag").value;
-      const antwoordDiv = document.getElementById("antwoord");
+  <div class="topic">
 
-      if (!vraagText) {
-        antwoordDiv.innerText = "Typ eerst een vraag in.";
-        return;
-      }
+    <div class="topic-title">Algemene C# vragen</div>
 
-      antwoordDiv.innerText = "Ik kom zo bij terug!";
+    <div class="topic-meta">
+      Stel hieronder je vraag of bespreek een onderwerp.
+    </div>
 
-      try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${API_KEY}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{ text: vraagText }]
-            }]
-          })
-        });
+    <div id="messages">
 
-        const data = await response.json();
-        
-        // Controleer of de API een foutmelding stuurde
-        if (data.error) {
-          antwoordDiv.innerText = "API Fout (" + data.error.code + "): " + data.error.message;
-        } else if (data.candidates && data.candidates[0].content.parts[0].text) {
-          antwoordDiv.innerText = data.candidates[0].content.parts[0].text;
-        } else {
-          antwoordDiv.innerText = "Onverwachte respons van de server.";
+      <div class="post">
+        <div class="avatar">M</div>
+        <div class="post-content">
+          <div class="post-author">
+            C# Vraagforum
+            <span class="post-time">Welkom</span>
+          </div>
+          <div class="post-text">Hoi! Stel je vragen hier! Voel je welkom!</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="loading" class="loading" style="display:none">
+      Er wordt een antwoord opgesteld...
+    </div>
+
+  </div>
+
+  <div class="reply-area">
+    <h3>Plaats een bericht</h3>
+
+    <textarea id="question"
+      placeholder="Schrijf hier je vraag..."></textarea>
+
+    <button class="submit" id="send" onclick="sendMessage()">
+      Bericht plaatsen
+    </button>
+  </div>
+
+  <div class="forum-footer">
+    Deze website blijft online tot 05/11/2026.
+  </div>
+
+</div>
+
+<script>
+
+// GEMINI INSTELLINGEN
+
+const GEMINI_API_KEY = "AQ.Ab8RN6L2417Ozx6cg9QdZjZ-zgO29waRlljNscQMscLAtIFgfw";
+
+const MODELS = [
+  "gemini-3.1-flash-lite",
+  "gemini-3.8-flash"
+];
+
+const SYSTEM_INSTRUCTION = `
+Je bent een noodlijn tijdens een toets. Bij de toets moet gebruik worden gemaakt van de volgende onderwerpen:
+Domeinmodellering / Noun Technique
+Classes & Objects
+Encapsulatie (Encapsulation)
+Private velden (fields)
+Properties met get/set-logica (accessors) en validatie
+Objectrelaties: Compositie (composition), Aggregatie (aggregation) en Associatie
+Overerving (Inheritance)
+Abstracte basisklassen (abstract)
+Generics (Generische klassen, bijv. Logboek<T>)
+Type-veilige collecties en datastructuren
+Sorteren en filteren van data
+Polymorfisme (Polymorphism)
+Virtuele methodes (virtual)
+Abstracte methodes (abstract)
+Method Overriding (override)
+Polymorfe collecties (bijv. List<T> van een basisklasse)
+Dynamic Binding / Polymorfe iteratie
+Interfaces
+Interface Segregation
+Losse koppeling (Loose Coupling)
+Exceptions & try-catch-finally-blokken
+Gooien van exceptions (throw)
+Custom Exception Hiërarchie
+Robuustheid & Vervangen van magic numbers / null-checks
+Factory Method Pattern (Creational Design Pattern)
+Observer Pattern (Behavioral Design Pattern)
+Strategy Pattern (Behavioral Design Pattern)
+
+Kan je bij vragen zo veel mogelijk deze ontwerpen meenemen in je antwoord. Als je gevraagd wordt om een uml diagram te maken. Schrijf deze dan uit in plaats iets visueels. Hou je C# antwoorden verder zo simpel mogelijk maar voer de opdracht wel uit handel als een tweede jaars HBO ICT student :).
+
+Neem dit verder ook mee Deze toets is diagnostisch: hij telt niet mee voor een cijfer, maar laat zien welke concepten je al
+beheerst en waar je nog aan moet werken.
+Tijdsindeling (advies): opdracht 1 in 10 minuten, opdracht 2 in 40 minuten, opdracht 3 in 10 minuten.
+Je wordt beoordeeld op twee indicatoren. Het beoordelingsmodel onderaan splitst ze op in
+deelindicatoren, zodat je precies ziet waar je staat.
+1. Architectuur: de applicatie toont een overzichtelijke, robuuste en elegante
+objectgeoriënteerde architectuur. Er zijn duidelijke UML-diagrammen en passende design
+patterns toegepast. De code is modulair, herbruikbaar en onderhoudbaar, met aandacht voor
+foutafhandeling en logging.
+2. OOP-principes: de applicatie is ontwikkeld met de kernprincipes van objectgeoriënteerd
+programmeren. De student gebruikt objectgeoriënteerde constructs, bibliotheken en
+ontwikkelmethoden die passen bij C#.
+`;
+
+let history = [];
+
+const messages = document.getElementById("messages");
+const question = document.getElementById("question");
+const sendButton = document.getElementById("send");
+const loading = document.getElementById("loading");
+
+function addPost(author, text, isUser) {
+
+  const post = document.createElement("div");
+  post.className = "post";
+
+  const avatar = document.createElement("div");
+  avatar.className = "avatar";
+  avatar.textContent = isUser ? "V" : "M";
+
+  const content = document.createElement("div");
+  content.className = "post-content";
+
+  const authorDiv = document.createElement("div");
+  authorDiv.className = "post-author";
+  authorDiv.textContent = author;
+
+  const time = document.createElement("span");
+  time.className = "post-time";
+  time.textContent = new Date().toLocaleTimeString("nl-NL", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+
+  authorDiv.appendChild(time);
+
+  const textDiv = document.createElement("div");
+  textDiv.className = "post-text";
+  textDiv.textContent = text;
+
+  content.appendChild(authorDiv);
+  content.appendChild(textDiv);
+
+  post.appendChild(avatar);
+  post.appendChild(content);
+
+  messages.appendChild(post);
+
+  post.scrollIntoView({ behavior: "smooth", block: "end" });
+}
+
+
+async function sendMessage() {
+
+  const text = question.value.trim();
+
+  if (!text || sendButton.disabled) return;
+
+  if (!GEMINI_API_KEY) {
+    alert("Vul eerst je Gemini API-key in.");
+    return;
+  }
+
+  addPost("Vraagsteller", text, true);
+  question.value = "";
+
+  history.push({
+    role: "user",
+    parts: [{ text: text }]
+  });
+
+  sendButton.disabled = true;
+  loading.style.display = "block";
+
+  try {
+
+    let data = null;
+    let lastError = "";
+
+    // Probeer alle beschikbare modellen
+    for (const model of MODELS) {
+
+      console.log("Proberen met:", model);
+
+      for (let attempt = 0; attempt < 3; attempt++) {
+
+        const response = await fetch(
+          "https://generativelanguage.googleapis.com/v1beta/models/" +
+          model + ":generateContent",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-goog-api-key": GEMINI_API_KEY
+            },
+            body: JSON.stringify({
+              systemInstruction: {
+                parts: [{ text: SYSTEM_INSTRUCTION }]
+              },
+              contents: history
+            })
+          }
+        );
+
+        const result = await response.json();
+
+        if (response.ok) {
+          data = result;
+          break;
         }
-      } catch (error) {
-        antwoordDiv.innerText = "Fout bij verbinding maken: " + error.message;
+
+        lastError = result.error?.message || "API-fout";
+
+        // Alleen tijdelijke fouten opnieuw proberen
+        if (response.status !== 503 &&
+            response.status !== 429) {
+          throw new Error(lastError);
+        }
+
+        // Wachten voordat we opnieuw proberen
+        if (attempt < 2) {
+          await new Promise(resolve =>
+            setTimeout(resolve, 5000 * Math.pow(2, attempt))
+          );
+        }
       }
+
+      // Als het gelukt is, stoppen
+      if (data) break;
     }
-  </script>
+
+    if (!data) {
+      throw new Error(
+        "Alle modellen zijn niet beschikbaar: " + lastError
+      );
+    }
+
+    const answer = data.candidates?.[0]?.content?.parts
+      ?.map(part => part.text || "")
+      .join("");
+
+    if (!answer) {
+      throw new Error("Geen antwoord ontvangen.");
+    }
+
+    history.push({
+      role: "model",
+      parts: [{ text: answer }]
+    });
+
+    addPost("C# Vraagforum AI", answer, false);
+
+  } catch (error) {
+
+    // Verwijder alleen de mislukte gebruikersvraag
+    if (history[history.length - 1]?.role === "user") {
+      history.pop();
+    }
+
+    addPost(
+      "Systeemmelding",
+      "Het bericht kon niet worden verwerkt: " + error.message,
+      false
+    );
+
+  } finally {
+
+    sendButton.disabled = false;
+    loading.style.display = "none";
+    question.focus();
+
+  }
+}
+
+question.addEventListener("keydown", function(event) {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    sendMessage();
+  }
+});
+
+</script>
 
 </body>
 </html>
-"""
 
-with open("index.html", "w", encoding="utf-8") as f:
-    f.write(html_code)
